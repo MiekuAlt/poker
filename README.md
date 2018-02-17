@@ -3,6 +3,7 @@ Determine winning poker hands
 
 ## Dependencies
 Only required for testing, project should run on Python >=3.5
+
 Install pipenv and install the projects dependencies:
 ```
 pip install pipenv
@@ -45,7 +46,10 @@ possible?
 ## Alternative Approaches
 ### PokerHandFactory
 The current Hand class implementation could be changed to a namedtuple
-containing just a rank and type. This
+containing just a hand_type and rank. This would the be produced from a
+PokerHandFactory class or method that analyzes the card string. This would
+be a more object-oriented approach but I felt it wasn't very pythonic and
+that it was a bit overkill for the task at hand.
 
 ### Hand Lookup Table
 Current implementation of determining rank and type of hand feels a bit
