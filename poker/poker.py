@@ -10,6 +10,10 @@ CARD_RANK = [*(str(i) for i in range(2, 10)), 't', 'j', 'q', 'k', 'a']
 WILD_CARD = '*'
 VALID_CARDS = {WILD_CARD, *CARD_RANK}
 
+HAND_A_WIN = '0'
+HAND_B_WIN = '1'
+TIE = '01'
+
 
 class InvalidHand(Exception):
     pass
@@ -37,13 +41,14 @@ class Hand:
     _CARD_TYPE_MAP = {
         (4, 1): HandType.FOUROFAKIND,
         (3, 2): HandType.FULLHOUSE,
-        (3, 1, 1): HandType.THREEOFAKIND,
+        (3, 1): HandType.THREEOFAKIND,
         (2, 2, 1): HandType.TWOPAIR,
-        (2, 1, 1, 1): HandType.PAIR,
-        (1, 1, 1, 1, 1): HandType.HIGHCARD,
+        (2, 1): HandType.PAIR,
+        (1,): HandType.HIGHCARD,
     }
 
     def __init__(self, cards):
+        cards = cards.lower()
         if len(cards) != HAND_SIZE:
             raise InvalidHand('Incorrect number of cards in hand. Expected: 5, Hand: {}'.format(cards))
 
@@ -88,7 +93,8 @@ class Hand:
         """ Check for all card types besides a straight """
 
         sorted_cards, wild_card_count = cls._sort_cards(cards)
-        sorted_cards = list(cls._backfill_wildcards(sorted_cards, wild_card_count))
+        sorted_cards = cls._backfill_wildcards(sorted_cards, wild_card_count)
+        sorted_cards = cls._remove_extra_singles(sorted_cards)
 
         rank, card_type_key = zip(*sorted_cards)
         hand_type = cls._CARD_TYPE_MAP.get(card_type_key)
@@ -139,10 +145,35 @@ class Hand:
             used_cards.append(card)
             wild_card_count -= count
 
+    @classmethod
+    def _remove_extra_singles(cls, sorted_cards):
+        """
+        Rules state that only the first high card counts towards breaking a
+        tie. Filter out all high cards after the first.
+        """
+        for card, count in sorted_cards:
+            yield card, count
+            if count == 1:
+                return
+
 
 def compare_hands(hand_a, hand_b):
     """ Compare two Hands """
-    return '01'
+    if hand_a.hand_type == hand_b.hand_type:
+        return _compare_rank(hand_a.rank, hand_b.rank)
+    elif hand_a.hand_type.value > hand_b.hand_type.value:
+        return HAND_A_WIN
+    return HAND_B_WIN
+
+
+def _compare_rank(rank_a, rank_b):
+    for card_a, card_b in zip(rank_a, rank_b):
+        if card_a == card_b:
+            continue
+        elif CARD_RANK.index(card_a) > CARD_RANK.index(card_b):
+            return HAND_A_WIN
+        return HAND_B_WIN
+    return TIE
 
 
 def window(seq, n=2):

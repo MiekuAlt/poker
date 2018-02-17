@@ -43,24 +43,25 @@ def test_type(hand, expected):
     ('tjqk*', ['a']),
     ('*jqka', ['a']),
     ('6789t', ['t']),
-    ('kkak2', ['k', 'a', '2']),
-    ('kka*2', ['k', 'a', '2']),
+    ('kkak2', ['k', 'a']),
+    ('kka*2', ['k', 'a']),
     ('a2a32', ['a', '2', '3']),
-    ('53929', ['9', '5', '3', '2']),
-    ('a9725', ['a', '9', '7', '5', '2']),
-    ('*9725', ['9', '7', '5', '2']),
+    ('53929', ['9', '5']),
+    ('a9725', ['a']),
+    ('*9725', ['9', '7']),
 ])
 def test_rank(hand, expected):
     assert expected == Hand(hand).rank
 
 
-# @pytest.mark.parametrize(('hand_a', 'hand_b', 'expected'), [
-#     ('AAKKK', '23456', '0'),
-#     ('KA225', '33A47', '1'),
-#     ('AA225', '44465', '1'),
-#     ('TT4A2', 'TTA89', '01'),
-#     ('A345*', '254*6', '1'),
-#     ('QQ2AT', 'QQT2J', '0'),
-# ])
-# def test_compare_hand(hand_a, hand_b, expected):
-#     assert expected == compare_hands(Hand(hand_a), Hand(hand_b))
+@pytest.mark.parametrize(('hand_a', 'hand_b', 'expected'), [
+    ('AAKKK', '23456', '0'),
+    ('KA225', '33A47', '1'),
+    ('AA225', '44465', '1'),
+    ('TT4A2', 'TTA89', '01'),
+    ('A345*', '254*6', '1'),
+    ('QQ2AT', 'QQT2J', '0'),
+    ('AAAAK', 'AAAA*', '01'),
+])
+def test_compare_hand(hand_a, hand_b, expected):
+    assert expected == compare_hands(Hand(hand_a), Hand(hand_b))
