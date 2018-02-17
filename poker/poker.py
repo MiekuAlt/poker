@@ -5,7 +5,6 @@ from itertools import islice
 HAND_SIZE = 5
 MAX_NUMBER_OF_SAME_CARD = 4
 
-LOW_STRAIGHT_HIGH_CARD = '5'  # Highest card in a low straight
 CARD_RANK = [*(str(i) for i in range(2, 10)), 't', 'j', 'q', 'k', 'a']
 WILD_CARD = '*'
 VALID_CARDS = {WILD_CARD, *CARD_RANK}
