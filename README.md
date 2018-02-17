@@ -20,7 +20,7 @@ pipenv install --dev
 
 ## Running Tests
 ```
-py.test
+py.test --pylint
 ```
 
 ## Implementation

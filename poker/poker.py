@@ -1,4 +1,4 @@
-from collections import Counter, OrderedDict
+from collections import Counter
 from enum import Enum
 from itertools import islice
 
@@ -7,7 +7,6 @@ MAX_NUMBER_OF_SAME_CARD = 4
 
 LOW_STRAIGHT_HIGH_CARD = '5'  # Highest card in a low straight
 CARD_RANK = [*(str(i) for i in range(2, 10)), 't', 'j', 'q', 'k', 'a']
-LOW_ACE_RANK = -1
 WILD_CARD = '*'
 VALID_CARDS = {WILD_CARD, *CARD_RANK}
 
@@ -84,12 +83,6 @@ class Hand:
 
         return None, None
 
-    @staticmethod
-    def _has_low_straight_card(card_indexes):
-        """ Check if card_indexes contain any low straight cards (besides aces) """
-        return any(card_index in card_indexes
-                   for card_index in range(CARD_RANK.index(LOW_STRAIGHT_HIGH_CARD)))
-
     @classmethod
     def _find_non_straight_card_types(cls, cards):
         """ Check for all card types besides a straight """
@@ -138,7 +131,9 @@ class Hand:
 
         # Add extra cards with the highest value
         while wild_card_count > 0:
-            card = next(card for card in reversed(CARD_RANK) if card not in used_cards)
+            # Need to disable pylint rule due to a false positive (https://github.com/PyCQA/pylint/issues/1830)
+            card = next(card for card in reversed(CARD_RANK)  # pylint: disable=stop-iteration-return
+                        if card not in used_cards)
             count = min(wild_card_count, MAX_NUMBER_OF_SAME_CARD)
             yield card, count
             used_cards.append(card)
@@ -154,10 +149,10 @@ def window(seq, n=2):
     """
     Sliding window implementation, sourced from https://stackoverflow.com/a/6822773
     """
-    it = iter(seq)
-    result = tuple(islice(it, n))
+    iterator = iter(seq)
+    result = tuple(islice(iterator, n))
     if len(result) == n:
         yield result
-    for elem in it:
+    for elem in iterator:
         result = result[1:] + (elem,)
         yield result
